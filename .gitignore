@@ -1,0 +1,12 @@
+/venv
+/data
+/.idea
+/.pytest_cache
+__pycache__
+
+*.sqlite.db
+*.idea
+*.pyc
+*.coverage
+.env
+*.log
