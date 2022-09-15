@@ -1,5 +1,5 @@
 # Simple Backup
-Version 0.1
+Version 0.1.0
 
 A simple script to back up your directories to Dropbox or local directory
 
