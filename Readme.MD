@@ -12,6 +12,10 @@ Edit `config.yaml` to configure parameters for your backup
 - `dir` Backup of directory and its contents
 - `db` Backup of SQL database *(Not Supported yet)*
 
+```  
+backup_type: dir
+```
+
 #### source
 
 List of directories
