@@ -1,4 +1,5 @@
-# Example
+# Your Config goes here
+# Example:
 # -----------------------------
 #  BackupName:
 #    backup_type: dir
@@ -10,13 +11,3 @@
 #      local:
 #        path: /foo/bar/destination_dir
 
-
-test:
-  backup_type: dir
-  source:
-    - d:\Projects\test\test_source
-  destination:
-    dropbox:
-      path: /test
-    local:
-      path: d:\Projects\test\test_backup
