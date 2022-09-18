@@ -129,12 +129,7 @@ class LocalBackup:
                                     archive_format,
                                     self.dir_from)
             else:
-                # shutil.copytree(self.dir_from, self.dir_to, dirs_exist_ok=True)
-                distutils.dir_util.copy_tree(
-                    str(self.dir_from),
-                    str(self.dir_to),
-                    update=1,
-                )
+                shutil.copytree(self.dir_from, self.dir_to, dirs_exist_ok=True)
         except IOError as err:
             SimpleLogger.error(err)
 
