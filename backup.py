@@ -1,4 +1,3 @@
-import errno
 import optparse
 import os
 import shutil
@@ -13,7 +12,7 @@ from dropbox.exceptions import ApiError, AuthError
 from dropbox.files import WriteMode
 from tqdm import tqdm
 
-app_version = '0.2.0'
+app_version = '0.2.1'
 dir_path = os.path.dirname(os.path.abspath(__file__))
 timestamp_format = "%m/%d/%Y, %H:%M:%S"
 
@@ -43,6 +42,12 @@ parser.add_option("-t", "--token",
                   dest="token",
                   default=f"{dir_path}/.token",
                   help="OPTIONAL: Token file location", )
+
+parser.add_option("-a", "--archive",
+                  action="store",  # optional because action defaults to "store"
+                  dest="archive",
+                  default="zip",
+                  help="OPTIONAL: Archive format: zip (default), tar or bztar", )
 
 options, args = parser.parse_args()
 option_dict = vars(options)
@@ -85,41 +90,47 @@ class Backup:
 
     def backup_dir(self):
         for source in self.sources:
-            SimpleLogger.msg(f"Backing up {source}")
-            for (dirpath, dirnames, filenames) in (os.walk(source)):
-                for filename in tqdm(filenames, desc=os.path.basename(dirpath), leave=False):
-                    file_from = Path(dirpath, filename)
-                    if 'local' in self.destination:
-                        file_to = Path(self.destination['local']['path'],
-                                       Path(dirpath).relative_to(Path(source).parent),
-                                       filename)
-                        local_bak = LocalBackup(file_from, file_to)
-                        local_bak.copy_files()
-                    if 'dropbox' in self.destination:
-                        file_to = Path(self.destination['dropbox']['path'],
-                                       Path(dirpath).relative_to(Path(source).parent),
-                                       filename)
-                        dbx_bak = DropboxBackup(file_from, file_to.as_posix())
-                        dbx_bak.upload()
-        SimpleLogger.msg("Backup is complete.")
+            if 'local' in self.destination:
+                dir_from = Path(source)
+                dir_to = Path(self.destination['local']['path'], Path(dir_from).relative_to(Path(source).parent))
+                SimpleLogger.msg(f"Local Backup: {dir_from} -> {dir_to}")
+                archive = self.destination['local']['archive'] if 'archive' in self.destination['local'] else False
+                local_bkp = LocalBackup(dir_from, dir_to, archive)
+                local_bkp.copy_files()
+
+            if 'dropbox' in self.destination:
+                SimpleLogger.msg(f"Dropbox Backup: {source} -> {self.destination['dropbox']['path']}")
+                for (dirpath, dirnames, filenames) in (os.walk(source)):
+                    for filename in tqdm(filenames, desc=os.path.basename(dirpath), leave=False):
+                        file_from = Path(dirpath, filename)
+                        if 'dropbox' in self.destination:
+                            file_to = Path(self.destination['dropbox']['path'],
+                                           Path(dirpath).relative_to(Path(source).parent),
+                                           filename)
+                            dbx_bak = DropboxBackup(file_from, file_to.as_posix())
+                            dbx_bak.upload()
 
 
 class LocalBackup:
-    def __init__(self, file, backup_path, archive=False):
-        self.file = file
-        self.backup_path = backup_path
+    def __init__(self, dir_from, dir_to, archive=False):
+        self.dir_from = dir_from
+        self.dir_to = dir_to
         self.archive = archive
 
     def copy_files(self):
         try:
-            shutil.copy(self.file, self.backup_path)
-        except IOError as e:
-            # ENOENT(2): file does not exist, raised also on missing dest parent dir
-            if e.errno != errno.ENOENT:
-                raise
-            # try creating parent directories
-            os.makedirs(os.path.dirname(self.backup_path))
-            shutil.copy(self.file, self.backup_path)
+            if self.archive:
+                if not os.path.exists(self.dir_to):
+                    os.makedirs(self.dir_to)
+                base_name = str(Path(self.dir_to, Path(self.dir_to).name))
+                archive_format = option_dict['archive']
+                shutil.make_archive(base_name,
+                                    archive_format,
+                                    self.dir_from)
+            else:
+                shutil.copytree(self.dir_from, self.dir_to, dirs_exist_ok=True)
+        except IOError as err:
+            SimpleLogger.error(err)
 
 
 class DropboxBackup:
@@ -181,6 +192,7 @@ class DropboxBackup:
 
 def main():
     config_dict = read_config(option_dict['config'])
+    SimpleLogger.msg("Starting Backup.")
     for item in config_dict:
         i = config_dict[item]
         for key, value in i.items():
@@ -202,6 +214,7 @@ def main():
         except KeyboardInterrupt:
             print("Operation is aborted by user")
             sys.exit(0)
+    SimpleLogger.msg("Backup is complete.")
 
 
 if __name__ == '__main__':
