@@ -1,8 +1,21 @@
 # Simple Backup
-Version 0.1.0
+Version 0.2.0
 
 A simple script to back up your directories to Dropbox or local directory
 
+## Usage
+usage: backup.py [options]
+```
+example: python backup.py -q
+example: python backup.py -q -c /path/to/config.yaml -t /path/to/.token
+```
+
+Options:
+- `--version`  show program's version number and exit
+- `-h, --help` show this help message and exit
+- `-q, --quiet` don't print status messages to stdout
+- `-c config.yaml, --config=/path/to/config.yaml` OPTIONAL: Config file location
+- `-t .token, --token=/path/to/.token` OPTIONAL: Token file location
 ## Configuration
 
 Edit `config.yaml` to configure parameters for your backup
