@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FTP Support
 - Backup of local databases
 - File compression and archivation
+- Basic versioning
 
 ## [0.1.1] - 2022-09-18
 ## Fixed
