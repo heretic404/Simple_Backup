@@ -11,7 +11,7 @@ from dropbox.exceptions import ApiError, AuthError
 from tqdm import tqdm
 from pathlib import Path
 
-app_version = 0.1
+app_version = '0.1.1'
 dir_path = os.path.dirname(os.path.abspath(__file__))
 timestamp_format = "%m/%d/%Y, %H:%M:%S"
 # Add OAuth2 access token, by creating .token file
@@ -63,13 +63,13 @@ def backup_dir(sources, destination):
         print(f"Backing up {source}")
         for (dirpath, dirnames, filenames) in (os.walk(source)):
             for filename in tqdm(filenames, desc=os.path.basename(dirpath), leave=False):
-                file_from = os.path.join(os.path.abspath(dirpath), filename)
+                file_from = Path(dirpath, filename)
                 if 'local' in destination:
-                    file_to = Path(destination['local']['path'], os.path.basename(source), filename)
+                    file_to = Path(destination['local']['path'], file_from.relative_to(source))
                     local_backup(file_from, file_to)
 
                 if 'dropbox' in destination:
-                    file_to = Path(destination['dropbox']['path'], os.path.basename(source), filename)
+                    file_to = Path(destination['dropbox']['path'], file_from.relative_to(source))
                     retry(dropbox_upload, file_from, file_to.as_posix(), count=3, delay=1)
 
 
