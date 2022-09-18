@@ -4,6 +4,7 @@ import shutil
 import errno
 import yaml
 import time
+import zlib
 from datetime import datetime
 import dropbox
 from dropbox.files import WriteMode
@@ -75,6 +76,7 @@ def backup_dir(sources, destination):
                                    Path(dirpath).relative_to(Path(source).parent),
                                    filename)
                     retry(dropbox_upload, file_from, file_to.as_posix(), count=3, delay=1)
+    print("Backup is complete.")
 
 
 def local_backup(file, backup_path):
@@ -143,6 +145,9 @@ def main():
                 backup_dir(b.source, b.destination)
         except AttributeError as err:
             log_error(f"ERROR: wrong Backup config {err}")
+        except KeyboardInterrupt:
+            print("Operation is aborted by user")
+            sys.exit(0)
 
 
 if __name__ == '__main__':
