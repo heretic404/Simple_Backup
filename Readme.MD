@@ -1,5 +1,5 @@
 # Simple Backup
-Version 0.2.0
+Version 0.2.1
 
 A simple script to back up your directories to Dropbox or local directory
 
@@ -16,6 +16,7 @@ Options:
 - `-q, --quiet` don't print status messages to stdout
 - `-c config.yaml, --config=/path/to/config.yaml` OPTIONAL: Config file location
 - `-t .token, --token=/path/to/.token` OPTIONAL: Token file location
+- `-a tar, --archive=tar` OPTIONAL: Archive format: `zip` (default), `tar` or `bztar`
 ## Configuration
 
 Edit `config.yaml` to configure parameters for your backup
@@ -42,7 +43,10 @@ source:
 Specify Backup destination, it can be single option or multiple destionations
 
 - `local` Backup to the local directory
+  - `path` Path where files should be copied
+  - `archive` OPTIONAL: True or False (default) - specifies if directory needs to be archivated
 - `dropbox` Backup to Dropbox directory
+  - `path` Path where files should be uploaded
 - `ftp` Backup to FTP server *(Not Supported yet)*
 
 Dropbox requires OAuth2 access token, You can generate it in the Dropbox App Console.
@@ -56,4 +60,5 @@ destination:
         path: /foo/bar
     local:
         path: /foo/bar/destination_dir
+        archive: True
 ```

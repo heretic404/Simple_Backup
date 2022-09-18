@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - FTP Support
 - Backup of local databases
-- File compression and archivation
 - Basic versioning
 
+## [0.2.1] - 2022-09-18
+- App refactoring and code optimization
+- Added archivation support
+
 ## [0.2.0] - 2022-09-18
-App refactoring and code optimization
+- App refactoring and code optimization
 ## Added
 - Support for external config file
 - Support for external token file
