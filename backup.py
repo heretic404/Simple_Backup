@@ -65,11 +65,15 @@ def backup_dir(sources, destination):
             for filename in tqdm(filenames, desc=os.path.basename(dirpath), leave=False):
                 file_from = Path(dirpath, filename)
                 if 'local' in destination:
-                    file_to = Path(destination['local']['path'], file_from.relative_to(source))
+                    file_to = Path(destination['local']['path'],
+                                   Path(dirpath).relative_to(Path(source).parent),
+                                   filename)
                     local_backup(file_from, file_to)
 
                 if 'dropbox' in destination:
-                    file_to = Path(destination['dropbox']['path'], file_from.relative_to(source))
+                    file_to = Path(destination['dropbox']['path'],
+                                   Path(dirpath).relative_to(Path(source).parent),
+                                   filename)
                     retry(dropbox_upload, file_from, file_to.as_posix(), count=3, delay=1)
 
 
