@@ -23,7 +23,8 @@ parser = optparse.OptionParser(
 
     usage: %prog [options]
     example: python %prog -q
-    example: python %prog -q -c /foo/bar/config.yaml
+    example: python %prog -q -c /path/to/config.yaml
+    example: python %prog -q -c /path/to/config.yaml -t /path/to/.token
     """,
     version=f"v{app_version}"
 )
