@@ -11,6 +11,7 @@ import yaml
 from dropbox.exceptions import ApiError, AuthError
 from dropbox.files import WriteMode
 from tqdm import tqdm
+import distutils.dir_util
 
 app_version = '0.2.1'
 dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -128,7 +129,12 @@ class LocalBackup:
                                     archive_format,
                                     self.dir_from)
             else:
-                shutil.copytree(self.dir_from, self.dir_to, dirs_exist_ok=True)
+                # shutil.copytree(self.dir_from, self.dir_to, dirs_exist_ok=True)
+                distutils.dir_util.copy_tree(
+                    str(self.dir_from),
+                    str(self.dir_to),
+                    update=1,
+                )
         except IOError as err:
             SimpleLogger.error(err)
 
